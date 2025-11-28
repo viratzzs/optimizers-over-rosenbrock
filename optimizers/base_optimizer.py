@@ -1,11 +1,8 @@
 class BaseOptimizer:
-    """
-    Abstract base class for all optimizers.
-    """
     def __init__(self, lr: float):
         self.lr = lr
     
-    def step(self, grad: tuple[float, float]) -> tuple[float, float]:
+    def step(self, params, grad: tuple[float, float]) -> tuple[float, float]:
         pass
     
     def reset(self):

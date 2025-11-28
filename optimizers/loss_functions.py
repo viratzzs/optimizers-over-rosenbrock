@@ -32,14 +32,14 @@ class LossFunction:
         return grad
 
 class Rosenbrock(LossFunction):
-    def __init__(self, a: float = 1.0, b: float = 100.0, baby_mode: str = True):
+    def __init__(self, shape: tuple = None, a: float = 1.0, b: float = 100.0, baby_mode: str = True):
         super().__init__()
         if baby_mode:
             self.a = a
             self.b = b
         else:
-            self.a = np.full((1,20), a)
-            self.b = np.full((1, 20), b)
+            self.a = np.full((1, shape[-1]), a) # (1,20)
+            self.b = np.full((1, shape[-1]), b) # same
         
     def evaluate(self, params):
         x, y = params[0], params[1]

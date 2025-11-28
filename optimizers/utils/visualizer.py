@@ -2,17 +2,27 @@ from manim import *
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-from simulate import Simulator
-from bgd import BatchGradientDescent
-from loss_functions import Rosenbrock
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
+from optimizers.utils.simulate import Simulator
+from optimizers import sgd, bgd
+from optimizers.adam import Adam
+from optimizers.momentum import Momentum
+from optimizers.loss_functions import Rosenbrock
 
 class Optimizer2D(Scene):
     def construct(self):
         #params = np.random.rand(2) * 4 - 2
-        params = np.random.rand(2, 20) * 4 - 2
+        params = np.random.rand(2, 200) * 4 - 2
         print(f"Initial weights: {params}")
-        
-        sim = Simulator(BatchGradientDescent(), Rosenbrock(baby_mode=False), params, 5000)
+        # lower lr for more params
+        #sim = Simulator(bgd.BatchGradientDescent(lr=0.0001), Rosenbrock(shape=params.shape, baby_mode=False), params, 10000)
+        #sim = Simulator(sgd.StochasticGradientDescent(lr=0.0001), Rosenbrock(shape=params.shape, baby_mode=False), params, 10000)
+        #sim = Simulator(Momentum(lr=0.0001), Rosenbrock(shape=params.shape, baby_mode=False), params, 10000)
+        sim = Simulator(Adam(lr=0.0001), Rosenbrock(shape=params.shape, baby_mode=False), params, 10000)
         sim.run()
         data = sim.trajectory
         
@@ -69,6 +79,11 @@ class Optimizer2D(Scene):
             if params.ndim > 1:
                 mean_x = np.mean(params[0])
                 mean_y = np.mean(params[1])
+                
+                # Stop plotting if values explode to NaN/Inf
+                if not (np.isfinite(mean_x) and np.isfinite(mean_y)):
+                    break
+                    
                 path_points.append(axes.c2p(mean_x, mean_y))
             else:
                 path_points.append(axes.c2p(params[0], params[1]))

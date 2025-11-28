@@ -1,4 +1,4 @@
-from base_optimizer import BaseOptimizer
+from optimizers.base_optimizer import BaseOptimizer
 
 class BatchGradientDescent(BaseOptimizer):
     """
