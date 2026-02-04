@@ -14,5 +14,5 @@ class AdaMax(BaseOptimizer):
         self.moment1 = self.beta1 * self.moment1 + (1 - self.beta1) * grad
         self.moment2 = np.maximum(self.beta2 * self.moment2, np.abs(grad))
         
-        new_params = params - (self.lr * self.moment1) / (self.moment2 * (1 - self.beta1**cur_step)) # dividing by bias correction term for first momen
+        new_params = params - (self.lr * self.moment1) / (self.moment2 * (1 - self.beta1**cur_step)) # dividing by bias correction term for first moment
         return new_params

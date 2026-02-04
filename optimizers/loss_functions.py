@@ -9,7 +9,7 @@ class LossFunction:
         pass
     
     def evaluate(self, params: np.ndarray) -> float:
-        """Returns loss value for a point."""
+        """Returns loss value for a point in n-d plane."""
         pass
     
     #def grad(self, x: float, y: float, h: float = 1e-5) -> np.ndarray:
@@ -26,7 +26,7 @@ class LossFunction:
             p_minus = params.copy()
             
             p_plus[i] += h
-            p_minus[i] -= h
+            p_minus[i] -= h    
             
             grad[i] = (self.evaluate(p_plus) - self.evaluate(p_minus)) / (2 * h)
         return grad
@@ -39,7 +39,7 @@ class Rosenbrock(LossFunction):
             self.b = b
         else:
             self.a = np.full((1, shape[-1]), a) # (1,20)
-            self.b = np.full((1, shape[-1]), b) # same
+            self.b = np.full((1, shape[-1]), b)
         
     def evaluate(self, params):
         x, y = params[0], params[1]

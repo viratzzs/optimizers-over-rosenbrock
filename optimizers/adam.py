@@ -12,7 +12,7 @@ class Adam(BaseOptimizer):
         self.momentum = (self.beta1 * self.momentum) + (1 - self.beta1) * grad
         self.velocity = (self.beta2 * self.velocity) + (1 - self.beta2) * grad ** 2
         
-        # correcting bias in first and second moments
+        # correcting bias in first and second moments using EMA
         m1 = self.momentum / (1 - self.beta1 ** cur_step)
         m2 = self.velocity / (1 - self.beta2 ** cur_step)
         

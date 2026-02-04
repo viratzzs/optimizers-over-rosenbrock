@@ -2,3 +2,4 @@
 .python-version
 media/
 __pycache__/
+*.mp4
