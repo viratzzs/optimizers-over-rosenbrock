@@ -21,15 +21,42 @@ from optimizers.loss_functions import Rosenbrock
 
 # label axis points
 class Optimizer2D(Scene):
+    """
+    Class which visualizes an optimizer eg., Adam, Nesterov optimizing the loss values of Rosenbrock function
+    """
+    
     def construct(self):
+        opt_name = os.environ.get("OPTIMIZER_NAME", "Adam")
+        lr = float(os.environ.get("LEARNING_RATE", "0.001"))
+        steps = int(os.environ.get("NUM_STEPS", "10000"))
+
         #params = np.random.rand(2) * 4 - 2
         params = np.random.rand(2, 200) * 4 - 2
         print(f"Initial weights: {params}")
         
+        if opt_name == "Adam":
+            optimizer = Adam(lr=lr)
+        elif opt_name == "AdaMax":
+            optimizer = AdaMax(lr=lr)
+        elif opt_name == "Nadam":
+            optimizer = Nadam(lr=lr)
+        elif opt_name == "RMSprop":
+            optimizer = RMSprop(lr=lr)
+        elif opt_name == "Adadelta":
+            optimizer = Adadelta(lr=lr)
+        elif opt_name == "Adagrad":
+            optimizer = Adagrad(lr=lr)
+        elif opt_name == "Momentum":
+            optimizer = Momentum(lr=lr)
+        elif opt_name == "Nesterov":
+            optimizer = Nesterov(lr=lr)
+        elif opt_name == "BGD":
+            optimizer = bgd.BatchGradientDescent(lr=lr)
+        else:
+            raise ValueError(f"Unknown optimizer: {opt_name}")
+        
         # lower lr for more params
-        #sim = Simulator(Nadam(lr=0.001), Rosenbrock(shape=params.shape, baby_mode=False), params, 10000)
-        sim = Simulator(AdaMax(lr=0.001), Rosenbrock(shape=params.shape, baby_mode=False), params, 15000)
-        #sim = Simulator(Nadam(lr=0.0001), Rosenbrock(shape=params.shape, baby_mode=False), params, 10000)
+        sim = Simulator(optimizer, Rosenbrock(shape=params.shape, baby_mode=False), params, steps)
         sim.run()
         data = sim.trajectory
         
@@ -89,7 +116,10 @@ class Optimizer2D(Scene):
         origin = Dot(axes.c2p(0, 0), color=WHITE, radius=0.06)
         origin_label = Text("(0,0)", font_size=16, color=WHITE).next_to(origin, DOWN+RIGHT, buff=0.1)
         
-        self.add(axes, contours, min_point, min_label, origin, origin_label)
+        title = Text(f"{opt_name} (lr={lr})", font_size=28, color=WHITE)
+        title.to_edge(UP, buff=0.3)
+        
+        self.add(axes, contours, min_point, min_label, origin, origin_label, title)
         
         # Calculate mean position(centroid) of tensor at each step
         # d[0] is array of shape (2, N)
@@ -119,8 +149,9 @@ class Optimizer2D(Scene):
         self.add(start_label, dot)
         
         self.play(
+            # Create path and force dot to follow its tip exactly to prevent lag
             Create(path),
-            MoveAlongPath(dot, path),
+            UpdateFromFunc(dot, lambda m: m.move_to(path.get_end())), 
             run_time=8,
             rate_func=linear
         )

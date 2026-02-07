@@ -1,22 +1,25 @@
-# Array of optimizers
-optimizers=("Nesterov" "Adagrad" "RMSprop" "Adadelta" "AdaMax" "Nadam")
 
-for opt in "${optimizers[@]}"; do
-    echo "Generating visualization for $opt..."
+export NUM_STEPS=7000
+
+generate_video() {
+    local opt_name=$1
+    local lr=$2
+    local output_file=$(echo "$opt_name" | tr '[:upper:]' '[:lower:]').mp4
     
-    # Update visualizer to use current optimizer
-    sed -i "s/sim = Simulator([^,]*,/sim = Simulator($opt(lr=0.0001),/" optimizers/utils/visualizer.py
-    
-    # Render with manim  
-    D:/projects/from-scratch/.venv/Scripts/python.exe -m manim -pql optimizers/utils/visualizer.py Optimizer2D -o ${opt,,}.mp4
-    
-    # Move output to root
-    if [ -f "media/videos/visualizer/480p15/$(echo $opt | tr '[:upper:]' '[:lower:]').mp4" ]; then
-        mv "media/videos/visualizer/480p15/$(echo $opt | tr '[:upper:]' '[:lower:]').mp4" .
-    fi
-    
-    echo "Completed $opt"
-    echo "---"
+    echo "Generating $opt_name (lr=$lr)..."
+    export OPTIMIZER_NAME="$opt_name"
+    export LEARNING_RATE="$lr"
+    manim -qm optimizers/utils/visualizer2d.py Optimizer2D -o "$output_file"
+}
+
+optimizers_001=("Adam" "AdaMax" "Nadam" "RMSprop" "Adadelta" "Adagrad")
+for opt in "${optimizers_001[@]}"; do
+    generate_video "$opt" "0.001"
 done
 
-echo "All optimizer visualizations generated!"
+optimizers_0001=("Momentum" "Nesterov")
+for opt in "${optimizers_0001[@]}"; do
+    generate_video "$opt" "0.0001"
+done
+
+echo "All visualizations generated!"

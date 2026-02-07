@@ -20,11 +20,7 @@ from optimizers.nesterov import Nesterov
 from optimizers.loss_functions import Rosenbrock
 
 
-def visualize_optimizer_3d_animated(optimizers, loss_function, num_steps, 
-                                     plot_title="Optimizer Paths on Loss Surface",
-                                     output_file="optimizers_3d_animation.mp4",
-                                     fps=30, skip_frames=10):
-    
+def visualize_optimizer_3d_animated(optimizers, loss_function, num_steps, plot_title, output_file, fps, skip_frames):
     colors = ['#00ffff', '#ff69b4', '#32cd32', '#ffd700', '#ff8c00', '#9d4edd', "#fbfbfb", '#ff3333']
     
     all_paths = []
@@ -161,7 +157,7 @@ def visualize_optimizer_3d_animated(optimizers, loss_function, num_steps,
 
 
 if __name__ == "__main__":
-    np.random.seed(42)
+    np.random.seed(9999)
     
     initial_params = np.random.rand(2, 1) * 4 - 2
     print(f"Initial parameters: {initial_params.flatten()}")
@@ -180,13 +176,13 @@ if __name__ == "__main__":
     ]
     
     print(f"\n{'='*60}")
-    print(f"Running all optimizers in single video...")
+    print(f"Running all optimizers over the loss curve")
     print('='*60)
     
     fig, ax, paths = visualize_optimizer_3d_animated(
         optimizers=optimizers,
         loss_function=loss_fn,
-        num_steps=5000,
+        num_steps=7500,
         plot_title="Optimization over Rosenbrock",
         output_file="all_optimizers_3d.mp4",
         fps=24,
